@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/style.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
+
+        <script type="text/javascript" >
+            var i = 0;
+            // setInterval(function () {
+
+            /*
+             
+             $.ajax({
+             url: 'https://pipes.yahoo.com/pipes/pipe.run?_id=ZKJobpaj3BGZOew9G8evXg&_render=json&ticker=GS',
+             type: "GET",
+             dataType: "json",
+             success: function (data) {
+             console.log(data);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             console.log(data.value.items[0].change);
+             
+             console.log(data[1]);
+             
+             }
+             });
+             i++;
+             console.log("count"+i);
+             
+             
+             
+             }, 1000000);*/
+
+
+            /*
+             * 
+             * 
+             * 
+             * 
+             */
+            //https://pipes.yahoo.com/pipes/pipe.run?_id=ZKJobpaj3BGZOew9G8evXg&_render=json&ticker=GS%2CMSFT%2CIBM%2CGE
+            //GS%2CMSFT%2CIBM%2CGE
+            // %2
+
+            $(document).ready(function() {
+                var ticker = ""
+                var str = "GS";
+                var delimiter = "%2C";
+
+                $("#add").on("click", function() {
+                    alert("Stock added");
+                    var ticker = $("#tickerstring").val();
+                    addTicker(ticker);
+                });
+
+                function addTicker(ticker) {
+                    str += delimiter + ticker;
+                }
+
+
+                //https://pipes.yahoo.com/pipes/pipe.run?_id=ZKJobpaj3BGZOew9G8evXg&_render=json&ticker=GS%2CMSFT
+                setInterval(function() {
+                    $.ajax({
+                        url: 'https://pipes.yahoo.com/pipes/pipe.run?_id=ZKJobpaj3BGZOew9G8evXg&_render=json&ticker=' + str,
+                        type: "GET",
+                        dataType: "json",
+                        success: function(data) {
+                            console.log(data);
+                            console.log("change" + data.value.items[0].change);
+                            console.log("date" + data.value.items[0].date);
+                            console.log("dayhigh" + data.value.items[0].dayhigh);
+                            console.log("daylow" + data.value.items[0].daylow);
+                            console.log("dayvolume" + data.value.items[0].dayvolume);
+                            console.log("last" + data.value.items[0].last);
+
+
+                            console.log(data[1]);
+                            //setInterval(function () {
+                            update(data);
+                            //}, 1000);
+                            console.log("NEW STRING" + str);
+                        }
+                    });
+                }, 1000);
+
+                function update(data) {
+                    $(data.value.items).each(function() {
+                        console.log("Object");
+                        console.log($(this)[0]);
+                        var change = $(this)[0].change;
+                        change += 'hi';
+                        var symbol = $(this)[0].ticker;
+                        var price = $(this)[0].last;
+                        var low = $(this)[0].daylow;
+                        var high = $(this)[0].dayhigh;
+
+                        // this is the image
+
+                        var chart = $(this)[0].chart;
+                        var dayvolume = $(this)[0].dayvolume;
+                        var time = $(this)[0].time;
+                        var link = $(this)[0].link;
+                        var date = $(this)[0].date;
+
+
+
+                        console.log("SYMBOL" + symbol);
+                        // this finds the symbol like GS
+                        var node = $("#feed").find("tbody").find("#" + symbol);
+
+                        // check if node exists
+                        if (node[0]) {
+                            // $("#feed").find("tbody").find("#"+symbol).find('.Symbol').text(symbol);
+                            node.find('.Symbol').text(symbol);
+                            node.find('.Price').text(price);
+                            node.find('.Change').text(change + "hi");
+                            node.find('.Low').text(low);
+                            node.find('.High').text(high);
+
+                            node.find('.Chart').text(chart);
+                            node.find('.Dayvolume').text(dayvolume);
+                            node.find('.Time').text(time);
+                            node.find('.Link').text(link);
+                            node.find('.Date').text(date);
+
+
+
+
+
+
+                        }
+                        // if not create new row.
+                        else {
+                            console.log("cannot find");
+                            $("#feed").find("tbody").append('<tr id="' + symbol + '">' +
+                                    '<td class="Symbol">' + symbol + '</td>' +
+                                    '<td class="Price">' + price + '</td>' +
+                                    '<td class="Change">' + change + "hi" + '</td>' +
+                                    '<td class="Low">' + low + '</td>' +
+                                    '<td class="High">' + high + '</td>' +
+                                    
+                                    '<td class="Chart">' + chart + '</td>' +
+                                    '<td class="Dayvolume">' + dayvolume + '</td>' +
+                                    '<td class="Time">' + time + '</td>' +
+                                    '<td class="Link">' + link + '</td>' +
+                                    '<td class="Date">' + date + '</td>' +
+                                    
+                                    
+                                    '</tr>');
+                        }
+
+                    });
+
+                }
+
+            });
+
+        </script>
+
+
+    </head>
+    <body>
+        <div id='main'>
+            <h2>Data Feed</h2>
+            <input type="text" id="tickerstring">
+            <input id="add" type="button" value="submit">
+
+            <table class="table table-striped table-responsive table-hover table-condensed" id="feed">
+
+                <thead>
+                    <tr>
+                        <th data-field="id">Symbol</th>
+                        <th data-field="id">Price</th>
+                        <th data-field="id">Change</th>
+                        <th data-field="id">Low</th>
+                        <th data-field="id">High</th>
+                        <th data-field="id">Chart</th>
+
+                    </tr>
+
+
+                </thead>
+                <tbody>
+                    <!--
+                            <tr id="MSFT">
+                                <td class="Symbol">MSFT</td>
+                                <td class="Price">Stock</td>
+                                <td class="Change">Stock</td>
+                                <td class="Low">Stock</td>
+                                <td class="High">Stock</td>
+                            
+                            </tr>  
+                    -->
+                    <!--
+                     <tr id="GS">
+                        <td class="Symbol">GS</td>
+                        <td class="Price">Stock</td>
+                        <td class="Change">Stock</td>
+                        <td class="Low">Stock</td>
+                        <td class="High">Stock</td>
+                    
+                    </tr>-->
+                </tbody>
+
+            </table>
+
+        </div>
+    </body>
+</html>
